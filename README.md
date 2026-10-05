@@ -4,7 +4,7 @@
 
 | STT | Thanh Vien | MSSV | Phan Cong |
 |-----|------------|------|-----------|
-| 1 | Đỗ Mạnh Đoan | 2A202602839 | Nguoi 1 — Data, corruption, runner, config  |
+| 1 | Đỗ Mạnh Đoan | 2A202602839 | Data, corruption, runner, config  |
 | 2 | Nguyễn Mạnh Cường | 2A2026.... | |
 
 ---
