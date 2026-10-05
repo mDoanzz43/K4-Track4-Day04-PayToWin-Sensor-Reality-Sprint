@@ -5,7 +5,7 @@
 | STT | Thành viên | MSSV | Phân công |
 |---:|---|---|---|
 | 1 | Đỗ Mạnh Đoan | 2A202602839 | Data, corruption, runner, config |
-| 2 | Nguyễn Mạnh Cường | 2A2026.... | Metrics, summary, visualization, report |
+| 2 | Nguyễn Mạnh Cường | 2A202602823 | Metrics, summary, visualization, report |
 
 ## Kết quả
 
