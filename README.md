@@ -1,168 +1,106 @@
-﻿# K4-Track4-Day04 — Lab T2 LiDAR Corruption Benchmark
+# K4-Track4-Day04 — Lab T2 LiDAR Corruption Benchmark
 
-**Nhom:** PayToWin
+**Nhóm:** PayToWin
 
-| STT | Thanh Vien | MSSV | Phan Cong |
-|-----|------------|------|-----------|
-| 1 | Đỗ Mạnh Đoan | 2A202602839 | Data, corruption, runner, config  |
-| 2 | Nguyễn Mạnh Cường | 2A2026.... | |
+| STT | Thành viên | MSSV | Phân công |
+|---:|---|---|---|
+| 1 | Đỗ Mạnh Đoan | 2A202602839 | Data, corruption, runner, config |
+| 2 | Nguyễn Mạnh Cường | 2A2026.... | Metrics, summary, visualization, report |
 
----
+## Kết quả
 
-## Trang Thai
+Pipeline đã hoàn thành và chạy full trên 10 scan: **10 baseline + 300 corrupted cases, 0 lỗi**. `outputs/metrics.csv` có 3.410 dòng metric thật, không còn STUB.
 
-| Phan | Nguoi | Trang Thai |
-|------|-------|------------|
-| `src/data_io.py` | Nguoi 1 | DONE |
-| `src/corruption_adapter.py` | Nguoi 1 | DONE |
-| `scripts/check_dataset.py` | Nguoi 1 | DONE |
-| `scripts/run_benchmark.py` | Nguoi 1 | DONE |
-| `configs/benchmark.json` | Nguoi 1 | DONE |
-| `requirements.txt` | Nguoi 1 | DONE |
-| `docs/source_notes.md` | Nguoi 1 | DONE |
-| `outputs/manifest.csv` | Nguoi 1 | DONE |
-| `outputs/metrics.csv` | Nguoi 1 (STUB) | Cho Nguoi 2 implement evaluate() |
-| `outputs/run_metadata.json` | Nguoi 1 | DONE |
-| `src/metrics.py` | **Nguoi 2** | PENDING — contract co san, dien implement |
-| `src/visualization.py` | **Nguoi 2** | PENDING |
-| `scripts/summarize_results.py` | **Nguoi 2** | PENDING |
-| `outputs/summary_per_sample.csv` | **Nguoi 2** | PENDING |
-| `outputs/summary_overall.csv` | **Nguoi 2** | PENDING |
-| `outputs/figures/` | **Nguoi 2** | PENDING |
-| `docs/report.md` | **Nguoi 2** | PENDING |
+| Severity | Global density retention (%) | Global XYZ RMSE (m) |
+|---:|---:|---:|
+| 1 | 94.0003 | 0.03465 |
+| 2 | 88.0004 | 0.06931 |
+| 3 | 82.0005 | 0.10396 |
+| 4 | 76.0006 | 0.13862 |
+| 5 | 70.0004 | 0.17327 |
 
----
+Đây là metric dữ liệu cảm biến, chưa phải object recall/mAP hoặc kết luận về an toàn. Phương pháp, failure case và giới hạn được trình bày trong [docs/report.md](docs/report.md).
 
-## Cai dat moi truong
+## Cài đặt
+
+Yêu cầu Python >= 3.9.
 
 ```bash
 pip install -r requirements.txt
+pip install "matplotlib>=3.7"
 ```
 
-**Yeu cau:** Python >= 3.9, numpy >= 1.24. Khong can open3d, h5py, hay model checkpoint.
+NumPy dùng cho benchmark và summary; Matplotlib chỉ dùng để sinh hình headless. Không cần Open3D, h5py hoặc model checkpoint.
 
----
+## Chạy tái hiện
 
-## Ket qua Nguoi 1 da ban giao
-
-### Kiem tra dataset
+Từ thư mục gốc project:
 
 ```bash
+# Kiểm tra đủ ID và schema KITTI N x 4
 python scripts/check_dataset.py
-```
 
-Ket qua da chay:
-- 10/10 sample ID khop day du giua 5 thu muc (calib, image, label, velodyne, velodyne_reduced)
-- Schema binary KITTI xac nhan: float32 little-endian N x 4, XYZ don vi met, intensity [0,1], all finite
-- Manifest luu tai `outputs/manifest.csv`
+# Unit check metric: boundary, empty bin, known RMSE
+python -m src.metrics
 
-### Chay benchmark (co the tai tao)
-
-```bash
-# Smoke 1 sample (kiem tra nhanh)
+# Smoke một sample hoặc full 310 cases
 python scripts/run_benchmark.py --smoke
-
-# Full 10 sample — 10 baseline + 300 corrupted = 310 cases
 python scripts/run_benchmark.py
+
+# Tổng hợp và sinh hình
+python scripts/summarize_results.py
+python -m src.visualization
 ```
 
-**Da chay thanh cong:** 0 errors, 2440 rows metrics.csv (dung STUB metrics).  
-Khi Nguoi 2 implement `src/metrics.py`, chay lai lenh tren de ghi de voi metric that.
+Full run phải được chạy sau smoke vì hai lệnh cùng ghi `outputs/metrics.csv` và `outputs/run_metadata.json`.
 
-### Upstream repo
+## Thiết kế benchmark
 
-- URL: https://github.com/thu-ml/3D_Corruptions_AD  
-- Local path: `3D_Corruptions_AD/`  
-- Commit: `48c23f77fe82beab599f8248b7794928334a3fb5`  
-- License: MIT — Copyright (c) 2023 Tsinghua Machine Learning Group  
+- Baseline dùng `data/velodyne`; severity 0 không truyền vào upstream.
+- Corruption: `density_decrease` và `gaussian_noise`, severity 1–5, seed 42/43/44.
+- Density xóa xấp xỉ 6/12/18/24/30% số điểm.
+- Gaussian dùng sigma 0.02/0.04/0.06/0.08/0.10 m trên XYZ, giữ intensity và thứ tự.
+- Range bin: `[0,10)`, `[10,20)`, `[20,40)`, `[40,80)`, và `[80,+∞)` m.
+- Metric: `point_count`, `retention_percent`, `xyz_rmse_m`.
+- Bin clean rỗng trả NA; summary không thay NA bằng 0.
+- `summary_per_sample.csv`: mean/std mẫu (`ddof=1`) qua seed.
+- `summary_overall.csv`: mean không trọng số và std giữa sample, kèm `n_valid_samples`.
 
----
+## Outputs
 
-## Nhiem vu Nguoi 2 (con lai)
+| File/thư mục | Nội dung |
+|---|---|
+| `outputs/manifest.csv` | Kiểm tra 10 ID và file đầu vào |
+| `outputs/metrics.csv` | 3.410 dòng metric theo case/bin |
+| `outputs/summary_per_sample.csv` | 1.210 dòng tổng hợp qua seed |
+| `outputs/summary_overall.csv` | 121 dòng tổng hợp qua sample |
+| `outputs/run_metadata.json` | Config, checksum, phiên bản, provenance, lỗi |
+| `outputs/figures/` | 3 BEV + retention plot + RMSE plot |
 
-### 1. Implement `src/metrics.py`
+BEV dùng ba sample đầu theo thứ tự ID (`000000`, `000001`, `000002`), severity 5, seed 42 và cùng axes. Sampling hiển thị là deterministic; mọi metric dùng toàn bộ điểm.
 
-Bo `raise NotImplementedError` va viet:
+## Nguồn và adaptation
 
-```python
-def evaluate(clean, corrupted, kind, range_bins):
-    # clean, corrupted: np.ndarray float32 (N, 4)
-    # kind: "baseline" | "density_decrease" | "gaussian_noise"
-    # range_bins: list[float], e.g. [0, 10, 20, 40, 80]
-    # Tra ve: list[dict] voi keys: metric, range_min_m, range_max_m, value, unit
-    ...
-```
+- Upstream: https://github.com/thu-ml/3D_Corruptions_AD
+- Commit: `48c23f77fe82beab599f8248b7794928334a3fb5`
+- License: MIT — Copyright (c) 2023 Tsinghua Machine Learning Group
+- `density_dec_global` giữ nguyên logic upstream.
+- Gaussian được điều chỉnh chỉ làm nhiễu XYZ vì upstream làm nhiễu toàn bộ cột, gồm intensity khi input là N×4.
 
-Contract day du xem trong `src/metrics.py` va `guild_project.md` muc 7.
+`data/velodyne_reduced` không được dùng vì nguồn gốc/cách tạo chưa xác minh. Chi tiết ở [docs/source_notes.md](docs/source_notes.md).
 
-**Sau khi implement xong**, chay lai:
-```bash
-python scripts/run_benchmark.py
-```
-Runner tu dong phat hien va dung `src.metrics.evaluate` thay STUB.
+## Cấu trúc chính
 
-### 2. Viet `scripts/summarize_results.py`
-
-Doc `outputs/metrics.csv`, tao:
-- `outputs/summary_per_sample.csv` — mean/std (ddof=1) qua 3 seed, theo sample/corruption/severity/metric/bin
-- `outputs/summary_overall.csv` — trung binh khong trong so qua sample means, bao so sample hop le
-
-### 3. Viet `src/visualization.py` va BEV plots
-
-- BEV baseline vs density severity 5 vs gaussian severity 5 cho >= 3 sample
-- Plot retention theo severity/range
-- Plot RMSE theo sigma
-- Luu PNG vao `outputs/figures/`
-
-### 4. Hoan thien README va `docs/report.md`
-
-- Setup + lenh thuc te
-- Claim, method, ket qua, failure case, gioi han
-- Khong dien so gia; neu chua chay thi ghi chua chay
-
----
-
-## Cau truc thu muc
-
-```
-guild_project.md          # Huong dan du an
-README.md                 # File nay
-requirements.txt          # numpy>=1.24
-configs/benchmark.json    # Config chay
-src/
-  data_io.py              # DONE (Nguoi 1)
-  corruption_adapter.py   # DONE (Nguoi 1)
-  metrics.py              # PENDING (Nguoi 2)
-  visualization.py        # PENDING (Nguoi 2)
-scripts/
-  check_dataset.py        # DONE (Nguoi 1)
-  run_benchmark.py        # DONE (Nguoi 1)
-  summarize_results.py    # PENDING (Nguoi 2)
-docs/
-  source_notes.md         # DONE (Nguoi 1)
-  report.md               # PENDING (Nguoi 2)
-data/
-  velodyne/               # 10 x .bin (baseline)
-  velodyne_reduced/       # 10 x .bin (CHUA DUNG — nguon goc chua xac minh)
-  image/                  # 10 x .png
-  calib/                  # 10 x .txt
-  label/                  # 10 x .txt
-3D_Corruptions_AD/        # Upstream repo clone (MIT)
+```text
+configs/benchmark.json
+src/data_io.py
+src/corruption_adapter.py
+src/metrics.py
+src/visualization.py
+scripts/check_dataset.py
+scripts/run_benchmark.py
+scripts/summarize_results.py
+docs/source_notes.md
+docs/report.md
 outputs/
-  manifest.csv            # DONE
-  metrics.csv             # DONE (STUB — cho real metrics)
-  run_metadata.json       # DONE
-  summary_per_sample.csv  # PENDING
-  summary_overall.csv     # PENDING
-  figures/                # PENDING
 ```
-
----
-
-## Ghi chu ky thuat (Nguoi 1 ban giao)
-
-- **velodyne_reduced:** Khong dung lam corruption. Ratio size ~16% so velodyne — nguon goc chua ro (co the la camera-FOV crop). Xem them `docs/source_notes.md`.
-- **Gaussian adaptation:** Upstream them noise vao tat ca C cot. Adapter nay chi them noise vao XYZ, giu nguyen intensity. Ghi ro trong `src/corruption_adapter.py`.
-- **Severity 0:** Khong truyen vao ham upstream. Baseline la clean cloud.
-- **Seed:** ap dung qua `np.random.seed()` vi upstream dung numpy global state.
-- **Khong luu 300 corrupted cloud:** Chi luu so do va metadata. Tai tao bang seed/config.

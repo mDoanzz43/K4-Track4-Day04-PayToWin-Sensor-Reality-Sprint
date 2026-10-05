@@ -1,9 +1,9 @@
 {
-  "run_start_utc": "2026-10-05T14:11:39.013981+00:00",
-  "run_end_utc": "2026-10-05T14:11:40.228477+00:00",
-  "command": "scripts/run_benchmark.py --smoke",
-  "smoke_mode": true,
-  "config_path": "D:\\STUDY\\Track4_Phase2\\K4-Track4-Day04-PayToWin-Sensor-Reality-Sprint\\configs\\benchmark.json",
+  "run_start_utc": "2026-10-05T15:36:32.502878+00:00",
+  "run_end_utc": "2026-10-05T15:36:37.170134+00:00",
+  "command": ".\\scripts\\run_benchmark.py",
+  "smoke_mode": false,
+  "config_path": "D:\\NMC\\VinAI\\Track_04\\Day_04\\K4-Track4-Day04-PayToWin-Sensor-Reality-Sprint\\configs\\benchmark.json",
   "config": {
     "data_root": "data",
     "upstream_repo": {
@@ -53,7 +53,7 @@
   "upstream": {
     "url": "https://github.com/thu-ml/3D_Corruptions_AD",
     "local_path": "3D_Corruptions_AD",
-    "commit": "48c23f77fe82beab599f8248b7794928334a3fb5",
+    "commit": "UNKNOWN",
     "license": "MIT -- Copyright (c) 2023 Tsinghua Machine Learning Group"
   },
   "adaptation_notes": {
@@ -62,15 +62,33 @@
     "severity_0": "NOT passed to upstream functions; baseline uses clean cloud"
   },
   "baseline_checksums_md5": {
-    "000000": "0382e72af1b2f8f8831c4434173aed04"
+    "000000": "0382e72af1b2f8f8831c4434173aed04",
+    "000001": "06b5be243911ae118194f6bf3365e2e7",
+    "000002": "d9a0c434d7c8c89f98472ec18c271d91",
+    "000003": "d809a9da48e5c3a0743a3cb2fa1265b7",
+    "000004": "070acdc728908baf122582a4dcfd8ba2",
+    "000005": "5904ce768f44a02e1d62e50d67bc7896",
+    "000006": "980ad8e11e783cfc214c565a9db2b5bd",
+    "000007": "77f1b823c1b714e38d4f74cb19651f0e",
+    "000008": "ecdd8625c7c5be47c04e9c111a030871",
+    "000009": "1e2f5bb3c388ba25fc81cf3817a492eb"
   },
   "sample_ids": [
-    "000000"
+    "000000",
+    "000001",
+    "000002",
+    "000003",
+    "000004",
+    "000005",
+    "000006",
+    "000007",
+    "000008",
+    "000009"
   ],
-  "n_baseline": 1,
-  "n_corrupted": 30,
+  "n_baseline": 10,
+  "n_corrupted": 300,
   "errors": [],
-  "metrics_csv": "D:\\STUDY\\Track4_Phase2\\K4-Track4-Day04-PayToWin-Sensor-Reality-Sprint\\outputs\\metrics.csv",
+  "metrics_csv": "D:\\NMC\\VinAI\\Track_04\\Day_04\\K4-Track4-Day04-PayToWin-Sensor-Reality-Sprint\\outputs\\metrics.csv",
   "units": {
     "point_count": "points/bin",
     "retention_percent": "percent",
@@ -83,8 +101,8 @@
     40,
     80
   ],
-  "python_version": "3.10.0",
-  "numpy_version": "2.2.5",
+  "python_version": "3.11.16",
+  "numpy_version": "2.4.6",
   "evaluate_source": "src.metrics",
   "unverified_assumptions": [
     "velodyne_reduced origin not confirmed -- excluded from benchmark",
