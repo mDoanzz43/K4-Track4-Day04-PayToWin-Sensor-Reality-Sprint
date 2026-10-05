@@ -1,0 +1,93 @@
+{
+  "run_start_utc": "2026-10-05T14:11:39.013981+00:00",
+  "run_end_utc": "2026-10-05T14:11:40.228477+00:00",
+  "command": "scripts/run_benchmark.py --smoke",
+  "smoke_mode": true,
+  "config_path": "D:\\STUDY\\Track4_Phase2\\K4-Track4-Day04-PayToWin-Sensor-Reality-Sprint\\configs\\benchmark.json",
+  "config": {
+    "data_root": "data",
+    "upstream_repo": {
+      "url": "https://github.com/thu-ml/3D_Corruptions_AD",
+      "local_path": "3D_Corruptions_AD",
+      "commit": "48c23f77fe82beab599f8248b7794928334a3fb5",
+      "license": "MIT"
+    },
+    "range_bins": [
+      0,
+      10,
+      20,
+      40,
+      80
+    ],
+    "severities": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "corruptions": [
+      "density_decrease",
+      "gaussian_noise"
+    ],
+    "outputs": {
+      "manifest_csv": "outputs/manifest.csv",
+      "metrics_csv": "outputs/metrics.csv",
+      "run_metadata_json": "outputs/run_metadata.json",
+      "figures_dir": "outputs/figures"
+    },
+    "notes": {
+      "baseline_severity": 0,
+      "baseline_uses_velodyne": true,
+      "velodyne_reduced_excluded": "Origin unverified; do not use as corruption",
+      "severity_0_not_passed_to_upstream": true,
+      "gaussian_adaptation": "XYZ only; intensity column not perturbed",
+      "save_corrupted_clouds": false
+    }
+  },
+  "upstream": {
+    "url": "https://github.com/thu-ml/3D_Corruptions_AD",
+    "local_path": "3D_Corruptions_AD",
+    "commit": "48c23f77fe82beab599f8248b7794928334a3fb5",
+    "license": "MIT -- Copyright (c) 2023 Tsinghua Machine Learning Group"
+  },
+  "adaptation_notes": {
+    "gaussian_noise": "XYZ only; intensity column not perturbed (upstream adds noise to all C cols)",
+    "density_dec_global": "Verbatim from upstream; drops 6/12/18/24/30% of points",
+    "severity_0": "NOT passed to upstream functions; baseline uses clean cloud"
+  },
+  "baseline_checksums_md5": {
+    "000000": "0382e72af1b2f8f8831c4434173aed04"
+  },
+  "sample_ids": [
+    "000000"
+  ],
+  "n_baseline": 1,
+  "n_corrupted": 30,
+  "errors": [],
+  "metrics_csv": "D:\\STUDY\\Track4_Phase2\\K4-Track4-Day04-PayToWin-Sensor-Reality-Sprint\\outputs\\metrics.csv",
+  "units": {
+    "point_count": "points/bin",
+    "retention_percent": "percent",
+    "xyz_rmse_m": "metres"
+  },
+  "range_bins_m": [
+    0,
+    10,
+    20,
+    40,
+    80
+  ],
+  "python_version": "3.10.0",
+  "numpy_version": "2.2.5",
+  "evaluate_source": "src.metrics",
+  "unverified_assumptions": [
+    "velodyne_reduced origin not confirmed -- excluded from benchmark",
+    "Dataset assumed KITTI but source URL not on-file; verified empirically"
+  ]
+}

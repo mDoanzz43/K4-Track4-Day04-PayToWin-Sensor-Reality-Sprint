@@ -1,3 +1,7 @@
 documents.docx
 summary.md
 3D_Corruptions_AD/
+guild_project.md
+__pycache__/
+*.pyc
+*.pyo

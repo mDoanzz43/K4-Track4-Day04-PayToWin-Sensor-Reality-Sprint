@@ -1,0 +1,27 @@
+{
+  "data_root": "data",
+  "upstream_repo": {
+    "url": "https://github.com/thu-ml/3D_Corruptions_AD",
+    "local_path": "3D_Corruptions_AD",
+    "commit": "48c23f77fe82beab599f8248b7794928334a3fb5",
+    "license": "MIT"
+  },
+  "range_bins": [0, 10, 20, 40, 80],
+  "severities": [1, 2, 3, 4, 5],
+  "seeds": [42, 43, 44],
+  "corruptions": ["density_decrease", "gaussian_noise"],
+  "outputs": {
+    "manifest_csv": "outputs/manifest.csv",
+    "metrics_csv": "outputs/metrics.csv",
+    "run_metadata_json": "outputs/run_metadata.json",
+    "figures_dir": "outputs/figures"
+  },
+  "notes": {
+    "baseline_severity": 0,
+    "baseline_uses_velodyne": true,
+    "velodyne_reduced_excluded": "Origin unverified; do not use as corruption",
+    "severity_0_not_passed_to_upstream": true,
+    "gaussian_adaptation": "XYZ only; intensity column not perturbed",
+    "save_corrupted_clouds": false
+  }
+}
